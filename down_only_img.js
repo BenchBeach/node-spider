@@ -9,8 +9,10 @@ const tempPath = './temp.json'
 const toSolveJson = fs.readFileSync(tempPath)
 
 let mySolveData = JSON.parse(toSolveJson)
-mySolveData=mySolveData.slice(15,16)
+console.log(mySolveData.length)
+mySolveData=mySolveData.slice(20,21)
 //finish 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
+// 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37
 
 downArr = []
 const downloadPath = './download_only_img'
@@ -26,8 +28,9 @@ for (let item of mySolveData) {
         fs.mkdirSync(smallDir)
     }
     console.log(liArr.length)
-    liArr=liArr.slice(44,50)
-    //8 14 20 25
+    liArr=liArr.slice(12,20)
+    //19
+    //4 8 14
     for (let page of liArr) {
         let text=getPath(page.text)
         const pageDir=`${smallDir}/${text}`

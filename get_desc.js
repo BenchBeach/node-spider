@@ -7,10 +7,10 @@ let request = require('request')
 const tempPath = './temp.json'
 
 const toSolveJson = fs.readFileSync(tempPath)
-
+//
 let mySolveData = JSON.parse(toSolveJson)
-mySolveData=mySolveData.slice(0,1)
-//finish 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
+mySolveData=mySolveData.slice(7,8)
+//finish 5 6 7
 
 downArr = []
 const downloadPath = './download_only_img'
@@ -65,19 +65,30 @@ function getAllImg(ps) {
     for(let img of ps){
         let p=getParentNodeUntilP(img)
         let desc=getDescByP(p,'')
-        if(desc.trim()==''){
+        if(desc.trim()===''){
             p=getNextNode(p)
-            desc==getDescByP(p,'')
+            desc=getDescByP(p,'')
         }
-        returnArr.push(img.attribs['data-orig-file'])
+        // if(desc.trim()===''){
+        //     p=getNextNode(p)
+        //     desc=getDescByP(p,'')
+        // }
+        // if(desc.trim()===''){
+        //     p=getNextNode(p)
+        //     desc=getDescByP(p,'')
+        // }
+        returnArr.push({
+            desc,
+            url:img.attribs['data-orig-file']
+        })
     }
     return returnArr;
 }
 
 function getDescByP(p,desc){
-    if(p.children.length!==0){
+    if(p.children&&p.children.length!==0){
         for(let item of p.children){
-            if(item.data!=undefined){
+            if(item.data!==undefined){
                 desc+=item.data
             }else{
                 desc+=getDescByP(item,desc)
@@ -97,12 +108,15 @@ function getParentNodeUntilP(node){
 }
 
 function getNextNode(node) {
+    if(!node.next){
+        return {name:'long'}
+    }
     if (node.next.type !== 'tag') {
         return getNextNode(node.next)
     } else if (node.next.type === 'tag') {
         return node.next
     } else {
-        return {name: 'null'}
+        return {name: 'kong'}
     }
 }
 
@@ -115,25 +129,33 @@ function downPage(page, path) {
 function downImg(arr, path) {
     let str = ''
     for (let index in arr) {
-        let desc=''
-        let url=arr[index].trim()
+        let desc=arr[index].desc
+        let url=arr[index].url
+        if(url==undefined){
+            continue
+        }
+        url=url.trim()
         url=encodeURI(url)
         if (!/([^\s]+(?=\.(webp|jpg|png|jpeg))\.\2)/gi.test(url)) {
             continue
         }
+        desc=desc.replace(/[-,]/g,'_')
+        desc=desc.replace(/[\r\n]/g,'')
+        desc=desc.replace(/[\s ]/g,'-')
         let fileName = url.split('/').pop()
-        str += `${desc}|${fileName}\n`
-        console.log(url,`${path}/${fileName}`)
-        try{
-            request(url).pipe(
-                fs.createWriteStream(`${path}/${fileName}`).on('close', err => {
-                    console.log('写入', err)
-                })
-            )
-        }catch(err){
-            // console.log(err)
-        }
-
+        str += `${desc},${fileName}\n`
+        // if(index==(arr.length-1)||index==(arr.length-2)){
+        //     console.log(url, `${path}/${fileName}`)
+        //     try {
+        //         request(url).pipe(
+        //             fs.createWriteStream(`${path}/${fileName}`).on('close', err => {
+        //                 console.log('写入', err)
+        //             })
+        //         )
+        //     } catch (err) {
+        //         // console.log(err)
+        //     }
+        // }
     }
     fs.writeFileSync(`${path}/describeFile.csv`, str)
 }
