@@ -10,8 +10,8 @@ const toSolveJson = fs.readFileSync(tempPath)
 
 let mySolveData = JSON.parse(toSolveJson)
 
-mySolveData=mySolveData.slice(3,4)
-//finish 1-2-3
+mySolveData=mySolveData.slice(4,5)
+//finish 1-2-3-4
 
 downArr = []
 const downloadPath = './download'
@@ -26,7 +26,6 @@ for (let item of mySolveData) {
     if (!fs.existsSync(smallDir)) {
         fs.mkdirSync(smallDir)
     }
-    liArr=liArr.slice(3,4)
     for (let page of liArr) {
         let text=getPath(page.text)
         const pageDir=`${smallDir}/${text}`
@@ -75,7 +74,7 @@ function getAllImg(ps) {
         //         desc: '',
         //         url: aTag.attribs.href
         //     })
-        // }else 
+        // }else
         if(item.children[0] && item.children[0].name === 'img'){
             let desc = ''
             imgTag = item.children[0]
@@ -94,6 +93,7 @@ function getAllImg(ps) {
         }else if (item.children[0] && item.children[0].name === 'a' &&item.attribs&& item.attribs.style !== 'text-align:center;') {
             let desc = ''
             aTag = item.children[0]
+            imgTag=aTag.children[0]
             if(getNextNode(item).attribs==undefined) console.log('here3')
             if (getNextNode(item).attribs&&getNextNode(item).attribs.style === 'text-align:center;') {
                 for (let inside of getNextNode(item).children) {
@@ -107,10 +107,11 @@ function getAllImg(ps) {
             if(aTag.attribs==undefined) console.log('here1')
             returnArr.push({
                 desc,
-                url: aTag.attribs.href
+                url: imgTag.attribs['data-orig-file']
             })
         } else if (item.children[0] && item.children[0].name === 'a'&&item.children[0].attribs && /([^\s]+(?=\.(webp|jpg|png|jpeg))\.\2)/gi.test(item.children[0].attribs.href)) {
             aTag = item.children[0]
+            imgTag=aTag.children[0]
             if(aTag.attribs==undefined) console.log('here11')
             let desc = ''
             for (let inside of item.children) {
@@ -122,7 +123,7 @@ function getAllImg(ps) {
             }
             returnArr.push({
                 desc,
-                url: aTag.attribs.href
+                url: imgTag.attribs['data-orig-file']
             })
         }
     }
