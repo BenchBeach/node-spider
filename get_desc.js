@@ -9,7 +9,7 @@ const tempPath = './temp.json'
 const toSolveJson = fs.readFileSync(tempPath)
 
 let mySolveData = JSON.parse(toSolveJson)
-mySolveData=mySolveData.slice(15,16)
+mySolveData=mySolveData.slice(0,1)
 //finish 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
 
 downArr = []
@@ -26,8 +26,6 @@ for (let item of mySolveData) {
         fs.mkdirSync(smallDir)
     }
     console.log(liArr.length)
-    liArr=liArr.slice(44,50)
-    //8 14 20 25
     for (let page of liArr) {
         let text=getPath(page.text)
         const pageDir=`${smallDir}/${text}`
@@ -65,9 +63,37 @@ function getPage(url,path){
 function getAllImg(ps) {
     let returnArr = []
     for(let img of ps){
+        let p=getParentNodeUntilP(img)
+        let desc=getDescByP(p,'')
+        if(desc.trim()==''){
+            p=getNextNode(p)
+            desc==getDescByP(p,'')
+        }
         returnArr.push(img.attribs['data-orig-file'])
     }
     return returnArr;
+}
+
+function getDescByP(p,desc){
+    if(p.children.length!==0){
+        for(let item of p.children){
+            if(item.data!=undefined){
+                desc+=item.data
+            }else{
+                desc+=getDescByP(item,desc)
+            }
+        }
+        return desc
+    }else{
+        return ''
+    }
+}
+
+function getParentNodeUntilP(node){
+    while(node.parent.name!=='p'){
+        node=node.parent
+    }
+    return node.parent
 }
 
 function getNextNode(node) {

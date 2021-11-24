@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "get": "node main.js",
-    "down": "node down.js"
+    "down": "node down.js",
+    "only":"node down_only_img.js",
+    "desc":"node get_desc.js"
   },
   "keywords": [],
   "author": "",
